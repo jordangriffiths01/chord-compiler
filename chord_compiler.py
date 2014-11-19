@@ -10,58 +10,66 @@ November 2014'''
 import time
 import sys
 import os
+import urllib.request
+from bs4 import BeautifulSoup
 
 DOMAIN = "http://tabs.ultimate-guitar.com/"
 STARTFLAG = '+ --------------------------------------------------------------------- +'
 ENDFLAG = '/* Ultimate-Guitar - Tab Pages */'
-INFILE = 'infile_temp.txt'
 FOLDERNAME = 'outfile' + time.strftime("%I_%M_%S")
 OUTFOLDER = os.path.abspath('bin/' + FOLDERNAME)
 SEARCH_URL = 'http://www.ultimate-guitar.com/search.php?search_type=title&value='
 LOGFILE = OUTFOLDER + '/aaa_log.txt'
 ERRORFILE = OUTFOLDER + '/aaa_errors.txt'
 
-import urllib.request
-from bs4 import BeautifulSoup
-
 def main():
     
-    os.makedirs(OUTFOLDER)
-    
-    start = 'STARTED AT ' + time.strftime("%I_%M_%S")
-    print(start)
-    log = open(LOGFILE, 'a')
-    log.write(start)
-    log.close()     
-    
-    songs = loadsongs()
-    for song in songs:
-        try:
-            html = get_html(song[0], song[1])
-            plaintext = get_plaintext(html)
-            add_to_file(song, plaintext)
-            log = open(LOGFILE, 'a')
-            log.write('SUCCESSFULy RETRIEVED\n\n')
-            log.close()
-            
-        except Exception as e:
-            log = open(LOGFILE, 'a')
-            log.write('\tERROR:\t' + str(e) + '\n\n')
-            log.close()
-            errors = open(ERRORFILE, 'a')
-            errors.write('{}\t{}\n'.format(song[0], song[1]))
-            errors.close()
-            
-    end = 'FINISHED AT ' + time.strftime("%I_%M_%S")
-    log = open(LOGFILE, 'a')
-    log.write(end)
-    log.close()    
+    try:
+        songs = loadsongs()
+    except Exception as e:
+        print('Error loading songs from file:', e)
+        
+    else:
+        os.makedirs(OUTFOLDER)
+        
+        start = 'STARTED AT ' + time.strftime("%I_%M_%S")
+        print(start)
+        log = open(LOGFILE, 'a')
+        log.write(start + '\n\n')
+        log.close()     
+        
+        for song in songs:
+            try:
+                html = get_html(song[0], song[1])
+                plaintext = get_plaintext(html)
+                add_to_file(song, plaintext)
+                log = open(LOGFILE, 'a')
+                log.write('SUCCESSFULy RETRIEVED\n\n')
+                log.close()
+                
+            except Exception as e:
+                log = open(LOGFILE, 'a')
+                log.write('\tERROR:\t' + str(e) + '\n\n')
+                log.close()
+                errors = open(ERRORFILE, 'a')
+                errors.write('{}\t{}\n'.format(song[0], song[1]))
+                errors.close()
+                
+        end = 'FINISHED AT ' + time.strftime("%I_%M_%S")
+        print(end)
+        log = open(LOGFILE, 'a')
+        log.write(end)
+        log.close()    
 
 def loadsongs():
     '''loads songs from text file into a list of tuples (song, artist)'''
     
+    infile_name = get_filename_from_user()
     songs = []
-    f = open(INFILE, 'r', encoding='utf-8')
+    try:
+        f = open(infile_name, 'r', encoding='utf-8')
+    except:
+        raise IOError('File Not Found')
     lines = f.readlines()
     for line in lines:
         line = line.strip().split('\t')
@@ -69,6 +77,18 @@ def loadsongs():
         
     f.close()
     return songs
+
+def get_filename_from_user():
+    '''gets a valid filename from user input, 'q' raises I/O exception'''
+    
+    filename = input('Enter Filename (q to quit): ')
+    if filename == 'q':
+        raise IOError('Input Terminated')
+    while type(filename) != str or not filename.endswith('.txt'):
+        filename = input('Invalid Filename -- Enter Filename (q to quit): ')
+        if filename == 'q':
+            raise IOError('Input Terminated')        
+    return filename
 
 
 def add_to_file(song, plaintext):
