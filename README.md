@@ -6,7 +6,7 @@ the clear-text version of the chords/lyrics is saved to a text file in a
 created /bin output directory.
 
 Input file consits of one tab seperated song entry on each line, in the format '{song}\t{artist}\n'
-Input is case insensitive
+Input file is case insensitive. Input file must be saved in same directory as .py file
 
 Output folder consists of a seperate text file for each song, in the format '{song}.txt'
 Output folder also contains a log file of the run 'aaa_log.txt' and a file 'aaa_errors.txt'
