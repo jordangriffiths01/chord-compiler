@@ -45,7 +45,7 @@ def main():
                 plaintext = get_plaintext(html)
                 add_to_file(song, plaintext)
                 log = open(LOGFILE, 'a')
-                log.write('SUCCESSFULy RETRIEVED\n\n')
+                log.write('SUCCESSFULY RETRIEVED\n\n')
                 log.close()
                 
             except Exception as e:
@@ -143,6 +143,9 @@ def get_url(song, artist, version):
     return url
     
 def fix_word(word):
+    '''remove superflouous characters and replace non-standard characters
+    with their equivalent standard counterparts'''
+    
     word = re.sub(r'[\'\",]', '', word)
     word = re.sub(r'&', 'and', word)
     return word
