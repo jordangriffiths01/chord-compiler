@@ -4,11 +4,6 @@ ultimate guitar for the highest rated version of each song. If it exists,
 the clear-text version of the chords/lyrics is saved to a text file in a
 created output directory.
 
-Input file should be with song and artist seperated by a tab, and each song 
-on a new line
-
-NB: Requires bs4 package to be installed
-
 Jordan Griffiths
 November 2014'''
 
