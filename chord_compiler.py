@@ -19,9 +19,9 @@ import os
 DOMAIN = "http://tabs.ultimate-guitar.com/"
 STARTFLAG = '+ --------------------------------------------------------------------- +'
 ENDFLAG = '/* Ultimate-Guitar - Tab Pages */'
-INFILE = 'infile.txt'
+INFILE = 'infile_temp.txt'
 FOLDERNAME = 'outfile' + time.strftime("%I_%M_%S")
-OUTFOLDER = os.path.abspath(FOLDERNAME)
+OUTFOLDER = os.path.abspath('bin/' + FOLDERNAME)
 SEARCH_URL = 'http://www.ultimate-guitar.com/search.php?search_type=title&value='
 LOGFILE = OUTFOLDER + '/aaa_log.txt'
 ERRORFILE = OUTFOLDER + '/aaa_errors.txt'
@@ -30,7 +30,15 @@ import urllib.request
 from bs4 import BeautifulSoup
 
 def main():
+    
     os.makedirs(OUTFOLDER)
+    
+    start = 'STARTED AT ' + time.strftime("%I_%M_%S")
+    print(start)
+    log = open(LOGFILE, 'a')
+    log.write(start)
+    log.close()     
+    
     songs = loadsongs()
     for song in songs:
         try:
@@ -48,6 +56,11 @@ def main():
             errors = open(ERRORFILE, 'a')
             errors.write('{}\t{}\n'.format(song[0], song[1]))
             errors.close()
+            
+    end = 'FINISHED AT ' + time.strftime("%I_%M_%S")
+    log = open(LOGFILE, 'a')
+    log.write(end)
+    log.close()    
 
 def loadsongs():
     '''loads songs from text file into a list of tuples (song, artist)'''
@@ -187,16 +200,7 @@ def get_search_html(song, artist):
     return s
 
 
-if __name__ == '__main__':
-    start = 'STARTED AT ' + time.strftime("%I_%M_%S")
-    print(start)
-    log = open(LOGFILE, 'a')
-    log.write(start)
-    log.close()   
-    
+if __name__ == '__main__':    
     main()
     
-    end = 'FINISHED AT ' + time.strftime("%I_%M_%S")
-    log = open(LOGFILE, 'a')
-    log.write(end)
-    log.close()
+
