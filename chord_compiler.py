@@ -10,6 +10,7 @@ November 2014'''
 import time
 import sys
 import os
+import re
 import urllib.request
 from bs4 import BeautifulSoup
 
@@ -125,10 +126,12 @@ def get_url(song, artist, version):
     artist_words = artist.split()
     var_song = ''
     for word in song_words:
+        word = fix_word(word)
         var_song += word + '_'
     var_song = var_song.strip('_')
     var_artist = ''
     for word in artist_words:
+        word = fix_word(word)
         var_artist += word + '_'
     var_artist = var_artist.strip('_')
         
@@ -138,6 +141,12 @@ def get_url(song, artist, version):
     url += '_crd.htm' 
     
     return url
+    
+def fix_word(word):
+    word = re.sub(r'[\'\",]', '', word)
+    word = re.sub(r'&', 'and', word)
+    return word
+    
     
 
 def get_plaintext(html):
@@ -202,8 +211,10 @@ def get_search_html(song, artist):
     
     url = SEARCH_URL
     for word in song.split():
+        word = fix_word(word)
         url += word + '+'
     for word in artist.split():
+        word = fix_word(word)
         url += word + '+'
     url = url[:-1]
     log = open(LOGFILE, 'a')
@@ -217,5 +228,3 @@ def get_search_html(song, artist):
 
 if __name__ == '__main__':    
     main()
-    
-
