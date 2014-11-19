@@ -22,6 +22,7 @@ OUTFOLDER = os.path.abspath('bin/' + FOLDERNAME)
 SEARCH_URL = 'http://www.ultimate-guitar.com/search.php?search_type=title&value='
 LOGFILE = OUTFOLDER + '/aaa_log.txt'
 ERRORFILE = OUTFOLDER + '/aaa_errors.txt'
+ITUNES_PLAYLIST_IDENTIFIER = 'Name\tArtist\tComposer'
 
 def main():
     
@@ -73,8 +74,11 @@ def loadsongs():
         raise IOError('File Not Found')
     lines = f.readlines()
     for line in lines:
-        line = line.strip().split('\t')
-        songs.append((line[0], line[1]))
+        if not line.startswith(ITUNES_PLAYLIST_IDENTIFIER):
+            if line.count('\t') > 1:
+                line = '\t'.join(line.split('\t')[:2]) #strips extra itunes data
+            line = line.strip().split('\t')
+            songs.append((line[0], line[1]))
         
     f.close()
     return songs
